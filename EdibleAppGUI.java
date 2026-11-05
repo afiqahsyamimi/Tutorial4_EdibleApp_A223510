@@ -2,121 +2,172 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class EdibleGUI extends JFrame implements ActionListener
+public class EdibleAppGUI extends JFrame implements ActionListener
 {
-    private JTextField txtName;
-    private JComboBox<String> cboFood;
-
+    private JButton btnChicken;
+    private JButton btnApple;
+    private JButton btnOrange;
     private JButton btnEat;
-    private JButton btnClear;
+    private JButton btnReset;
+
+    private JLabel lblSelectedFood;
 
     private JTextArea txtOutput;
 
-    public EdibleGUI()
+    private String selectedFood = "";
+
+    public EdibleAppGUI()
     {
-        setTitle("Edible App");
-        setSize(450,300);
+        setTitle("Edible Management System");
+        setSize(900,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        setLayout(new BorderLayout());
+        Container pane = getContentPane();
+        pane.setLayout(new BorderLayout(10,10));
 
-        JLabel lblTitle =
-                new JLabel("EDIBLE APPLICATION",
-                SwingConstants.CENTER);
+        //TITLE PANEL 
+        JPanel titlePanel = new JPanel(new GridLayout(2,1));
 
-        lblTitle.setFont(
-                new Font("Arial",Font.BOLD,18));
+        JLabel lblTitle = new JLabel("EDIBLE MANAGEMENT SYSTEM", SwingConstants.CENTER);
 
-        add(lblTitle, BorderLayout.NORTH);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 28));
 
-        JPanel inputPanel =
-                new JPanel(new GridLayout(2,2));
+        JLabel lblSubTitle = new JLabel("Choose a food to see how it can be eaten", SwingConstants.CENTER);
 
-        inputPanel.add(new JLabel("Person Name"));
-        txtName = new JTextField();
-        inputPanel.add(txtName);
+        lblSubTitle.setFont(new Font("Arial", Font.BOLD, 16));
 
-        inputPanel.add(new JLabel("Food"));
+        titlePanel.add(lblTitle);
+        titlePanel.add(lblSubTitle);
 
-        cboFood = new JComboBox<>();
+        pane.add(titlePanel, BorderLayout.NORTH);
 
-        cboFood.addItem("Chicken");
-        cboFood.addItem("Red Apple");
-        cboFood.addItem("Navel Orange");
+        //CENTER PANEL
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        inputPanel.add(cboFood);
+        // Food Buttons
+        JPanel foodPanel = new JPanel(new GridLayout(1,3,10,10));
 
-        add(inputPanel, BorderLayout.CENTER);
+        btnChicken = new JButton("Chicken");
+        btnApple = new JButton("Red Apple");
+        btnOrange = new JButton("Navel Orange");
 
+        foodPanel.add(btnChicken);
+        foodPanel.add(btnApple);
+        foodPanel.add(btnOrange);
+
+        centerPanel.add(foodPanel);
+
+        centerPanel.add(Box.createVerticalStrut(30));
+
+        // Selected Food Label
+        lblSelectedFood = new JLabel("Selected Food: ", SwingConstants.CENTER);
+
+        lblSelectedFood.setFont(new Font("Arial", Font.BOLD, 18));
+
+        lblSelectedFood.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        centerPanel.add(lblSelectedFood);
+
+        centerPanel.add(Box.createVerticalStrut(20));
+
+        // Output Area
+        txtOutput = new JTextArea(8, 50);
+        txtOutput.setEditable(false);
+        txtOutput.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        JScrollPane scrollPane = new JScrollPane(txtOutput);
+
+        centerPanel.add(scrollPane);
+
+        pane.add(centerPanel, BorderLayout.CENTER);
+
+        // BUTTON PANEL 
         JPanel buttonPanel = new JPanel();
 
-        btnEat = new JButton("Eat");
-        btnClear = new JButton("Clear");
+        btnEat = new JButton("EAT");
+        btnReset = new JButton("RESET");
 
         buttonPanel.add(btnEat);
-        buttonPanel.add(btnClear);
+        buttonPanel.add(btnReset);
 
-        add(buttonPanel, BorderLayout.SOUTH);
+        pane.add(buttonPanel, BorderLayout.SOUTH);
 
-        txtOutput = new JTextArea(5,20);
-        txtOutput.setEditable(false);
-
-        add(new JScrollPane(txtOutput),
-                BorderLayout.EAST);
-
+        // ===== REGISTER LISTENER =====
+        btnChicken.addActionListener(this);
+        btnApple.addActionListener(this);
+        btnOrange.addActionListener(this);
         btnEat.addActionListener(this);
-        btnClear.addActionListener(this);
+        btnReset.addActionListener(this);
 
         setVisible(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e)
     {
-        if(e.getSource()==btnEat)
+        if(e.getSource() == btnChicken)
         {
-            String personName =
-                    txtName.getText();
-
-            Person p =
-                    new Person(personName);
-
-            String food =
-                    cboFood.getSelectedItem()
-                    .toString();
-
-            Edible item;
-
-            if(food.equals("Chicken"))
-            {
-                item =
-                    new Animal("Chicken");
-            }
-            else if(food.equals("Red Apple"))
-            {
-                item =
-                    new Apple("Red Apple");
-            }
-            else
-            {
-                item =
-                    new Orange("Navel Orange");
-            }
-
-            txtOutput.setText(
-                    p.eating(item));
+            selectedFood = "Chicken";
+            lblSelectedFood.setText("Selected Food: Chicken");
         }
 
-        if(e.getSource()==btnClear)
+        else if(e.getSource() == btnApple)
         {
-            txtName.setText("");
+            selectedFood = "Red Apple";
+            lblSelectedFood.setText("Selected Food: Red Apple");
+        }
+
+        else if(e.getSource() == btnOrange)
+        {
+            selectedFood = "Navel Orange";
+            lblSelectedFood.setText("Selected Food: Navel Orange");
+        }
+
+        else if(e.getSource() == btnEat)
+        {
+            if(selectedFood.equals("Chicken"))
+            {
+                Person p = new Person("Ali");
+                Animal chicken = new Animal("Chicken");
+
+                txtOutput.append(p.eating(chicken) + "\n");
+            }
+
+            else if(selectedFood.equals("Red Apple"))
+            {
+                Person p = new Person("Sarah");
+                Apple apple = new Apple("Red Apple");
+
+                txtOutput.append(p.eating(apple) + "\n");
+            }
+
+            else if(selectedFood.equals("Navel Orange"))
+            {
+                Person p = new Person("Sarah");
+                Orange orange = new Orange("Navel Orange");
+
+                txtOutput.append(p.eating(orange) + "\n");
+            }
+
+            else
+            {
+                JOptionPane.showMessageDialog(this, "Please select a food first!");
+            }
+        }
+
+        else if(e.getSource() == btnReset)
+        {
             txtOutput.setText("");
+            selectedFood = "";
+            lblSelectedFood.setText("Selected Food: ");
         }
     }
 
     public static void main(String[] args)
     {
-        new EdibleGUI();
+        new EdibleAppGUI();
     }
 }
 
